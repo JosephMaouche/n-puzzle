@@ -70,7 +70,10 @@ void lier_tuile(struct Grille *grille, struct Tuile *tuile)
                     tuile->height = 2;
                 }
                 grille->grid[i][j]->part = tuile;
-                return;
+            }
+            else
+            {
+                tuile->part = NULL;
             }
         }
     }
@@ -135,6 +138,7 @@ void remplir_grille(struct Grille *grille, int *liste_tuiles)
         tuile->width = 1;                                   // Assignation de la taille, simple par défaut.
         tuile->height = 1;                                  // Assignation de la taille, simple par défaut.
         tuile->part = 0;                                 // Assignation de son extension, nul par défaut.
+        tuile->isemptyone = true;
         grille->grid[x][y] = tuile;                         // Ajout de la tuile à la grille.
         i++;
     }
@@ -143,25 +147,70 @@ void remplir_grille(struct Grille *grille, int *liste_tuiles)
 void tuile_info(struct Grille *grille, int x, int y)
 // Fonction de debug pour voir les infos d'une tuile
 {
+    printf("----------------------------------------------------\n");
     printf("Info de la tuile (%d,%d) : \n",x,y);
+    printf("memAdress : %p\n", &grille->grid[x][y]);
     printf("num : %d\n", grille->grid[x][y]->num);
     printf("width : %d\n", grille->grid[x][y]->width);
     printf("height : %d\n", grille->grid[x][y]->height);
     printf("x,y : %d,%d\n", grille->grid[x][y]->x,grille->grid[x][y]->y);
-    // printf("part : %d\n", grille->grid[x][y]->part->num);
+    printf("part memAdress : %p\n", &grille->grid[x][y]->part);
+    printf("empty de la grille : (%d,%d)\n", grille->empty_x, grille->empty_y);
+    printf("----------------------------------------------------\n");
 }
 
 void tuile_swap(struct Grille *grille, int x0, int y0, int xt, int yt)
 {
+    
     struct Tuile *temp = grille->grid[x0][y0]; // Stockage temporaire de la première tuile
-    grille->grid[x0][y0] = grille->grid[xt][yt]; // La première tuile prend la place de la seconde
-    grille->grid[xt][yt] = temp; // La seconde tuile prend la place de la première
 
-    // Mise à jour des coordonnées x et y pour chaque tuile
-    grille->grid[x0][y0]->x = x0;
-    grille->grid[x0][y0]->y = y0;
-    grille->grid[xt][yt]->x = xt;
-    grille->grid[xt][yt]->y = yt;
+    if (grille->grid[xt][yt]->height == 1 && grille->grid[xt][yt]->width == 1)
+    {
+        grille->grid[x0][y0] = grille->grid[xt][yt]; // La première tuile prend la place de la seconde
+        grille->grid[xt][yt] = temp; // La seconde tuile prend la place de la première
+        
+        // Mise à jour des coordonnées x et y pour la tuile vide de la grille
+        grille->empty_x = xt;
+        grille->empty_y = yt;
+        
+        // Mise à jour des coordonnées x et y pour chaque tuile
+        grille->grid[x0][y0]->x = x0;
+        grille->grid[x0][y0]->y = y0;
+        grille->grid[xt][yt]->x = xt;
+        grille->grid[xt][yt]->y = yt;
+    }
+    else if (grille->grid[xt][yt]->height == 2 && grille->grid[xt][yt]->width == 1)
+    // si c'est une tuile longue
+    {
+        grille->grid[x0][y0] = grille->grid[xt-1][yt]; // La première tuile prend la place de la seconde
+        grille->grid[xt-1][yt] = temp; // La seconde tuile prend la place de la première
+        // Mise à jour des coordonnées x et y pour la tuile vide de la grille
+        grille->empty_x = xt-1;
+        grille->empty_y = yt;
+        // Mise à jour des coordonnées x et y pour chaque tuile
+        grille->grid[x0][y0]->x = x0;
+        grille->grid[x0][y0]->y = y0;
+        grille->grid[xt-1][yt]->x = xt-1;
+        grille->grid[xt-1][yt]->y = yt;
+    }
+    else if (grille->grid[xt][yt]->height == 1 && grille->grid[xt][yt]->width == 2)
+    // si c'est une tuile large
+    {
+        grille->grid[x0][y0] = grille->grid[xt][yt-1]; // La première tuile prend la place de la seconde
+        grille->grid[xt][yt-1] = temp; // La seconde tuile prend la place de la première
+        
+        // Mise à jour des coordonnées x et y pour la tuile vide de la grille
+        grille->empty_x = xt;
+        grille->empty_y = yt-1;
+        
+        // Mise à jour des coordonnées x et y pour chaque tuile
+        grille->grid[x0][y0]->x = x0;
+        grille->grid[x0][y0]->y = y0;
+        grille->grid[xt][yt-1]->x = xt;
+        grille->grid[xt][yt-1]->y = yt-1;
+    }
+    
+    
 }
 
 int main()
@@ -176,6 +225,11 @@ int main()
     afficher_grille(&grille_de_test);
     tuile_swap(&grille_de_test, 3,3,3,2);
     afficher_grille(&grille_de_test);
-    tuile_info(&grille_de_test, 3, 3);
-    // return 0;
+    tuile_swap(&grille_de_test,3,2,2,2);
+    afficher_grille(&grille_de_test);
+    tuile_swap(&grille_de_test,1,2,1,1);
+    afficher_grille(&grille_de_test);
+    // tuile_info(&grille_de_test,2,1);
+    tuile_info(&grille_de_test,1,0);
+    // tuile_info(&grille_de_test,3,2);
 }
