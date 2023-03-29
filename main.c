@@ -3,6 +3,11 @@
 #include <stdlib.h>
 
 #define N 4 // Taille du jeu
+// Mouvements de la case vide
+#define UP 0
+#define DOWN 1
+#define LEFT 2
+#define RIGHT 3
 
 // Structure d'une tuile :
 struct Tuile
@@ -20,7 +25,9 @@ struct Tuile
 struct Grille
 {
     struct Tuile *grid[N][N]; // Grille de jeu de taille N par N
-    int h;                    // Valeur heuristique à utiliser plus tard ?
+    int h;                    // Valeur heuristique (Manhattan Distance)    | Aglortihme A*
+    int g;                    // Cout                                       | Aglortihme A*
+    int move_used;            // Mouvement utilisé pour arriver à cette grille 
     int empty_x;              // coordonnée x de la tuile vide
     int empty_y;              // coordonnée y de la tuile vide
 };
@@ -37,11 +44,12 @@ void init_grille(struct Grille *grille)
             grille->grid[i][j]->x = i;                         // coordonnée x de la tuile
             grille->grid[i][j]->y = j;                         // coordonnée y de la tuile
             grille->grid[i][j]->width = 1;                     // taille simple par défaut
-            grille->grid[i][j]->height = 1;
+            grille->grid[i][j]->height = 1;                    // ''
         }
     }
     // Initialisation de la case vide
     grille->grid[N - 1][N - 1]->num = -1;
+    grille->g = 0;  // Valeur par défaut pour le cout 
 }
 
 void lier_tuile(struct Grille *grille, struct Tuile *tuile)
