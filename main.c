@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include "utilities.c"
 
 #define N 4 // Taille du jeu
 // Mouvements de la case vide
@@ -232,23 +233,48 @@ void tuile_swap(struct Grille *grille, int x0, int y0, int xt, int yt)
         grille->grid[xt][yt-1]->y = yt-1;
     }
 }
+/////////////////////////////////////////////////////////
 
 int main()
 {
     struct Grille grille_de_test;
     int liste_tuiles_4x4[16] = {1, 2, 3, 3, 4, 4, 5, 6, 7, 8, 5, 9, 10, 11, 12, 0};
-    int liste_tuiles_5x5[25] = {1, 2, 3, 3, 4, 4, 5, 6, 7, 8, 5, 9, 10, 11, 12, 2, 3, 2, 3, 2, 3, 2, 3, 2, 0};
-    int liste_tuiles_10x10[100] = {87, 23, 56, 91, 12, 78, 45, 67, 34, 89, 76, 98, 54, 21, 43, 65, 90, 32, 10, 55, 88, 11, 44, 77, 99, 22, 57, 33, 66, 79, 13, 46, 68, 35, 80, 24, 58, 92, 14, 47, 70, 36, 81, 25, 59, 93, 15, 48, 71, 38, 83, 26, 60, 94, 16, 49, 72, 39, 84, 27, 61, 95, 17, 50, 73, 40, 85, 28, 62, 96, 18, 51, 74, 41, 86, 29, 63, 97, 19, 52, 75, 42, 64, 82, 20, 53, 69, 37, 31, 30, 18, 51, 74, 41, 86, 29, 63, 97, 19, 0};
-    init_grille(&grille_de_test);
-    remplir_grille(&grille_de_test, liste_tuiles_4x4);
-    lier_all_tuiles(&grille_de_test);
-    afficher_grille(&grille_de_test);
-    tuile_swap(&grille_de_test, 3,3,3,2);
-    afficher_grille(&grille_de_test);
-    tuile_swap(&grille_de_test,3,2,2,2);
-    afficher_grille(&grille_de_test);
-    tuile_swap(&grille_de_test,1,2,1,1);
-    afficher_grille(&grille_de_test);
-    tuile_info(&grille_de_test,2,0);
-    coups_possibles_maj(&grille_de_test);
+    int liste_tuiles_4x4_h[16] = {7, 1, 3, 3, 7, 4, 4, 5, 8, 0, 10, 9, 11, 2, 12, 6};
+    // int ouais = sizeof(liste_tuiles_4x4_h) / sizeof(liste_tuiles_4x4_h[0]);
+    // print_arr(liste_tuiles_4x4,16);
+    special_sort(liste_tuiles_4x4_h,0, 16);
+    print_arr(liste_tuiles_4x4_h,16);
+
+    printf("\npremier elem : %d\n",liste_tuiles_4x4_h[0]);
+    printf("dernier elem : %d\n",liste_tuiles_4x4_h[15]);
+
+    // int arr[16];
+    // for (int i = 1; i < 16; i++)
+    // {
+    //     arr[i-1] = liste_tuiles_4x4_h[i];
+    // }
+    // print_arr(arr,16);
+    
+    // int temp = liste_tuiles_4x4_h[0];
+    // liste_tuiles_4x4_h[0] = liste_tuiles_4x4_h[15];
+    // liste_tuiles_4x4_h[15] = temp;
+
+    // printf("premier elem : %d\n",liste_tuiles_4x4_h[0]);
+    // printf("dernier elem : %d\n",liste_tuiles_4x4_h[15]);
+
+
+    // int liste_tuiles_5x5[25] = {1, 2, 3, 3, 4, 4, 5, 6, 7, 8, 5, 9, 10, 11, 12, 2, 3, 2, 3, 2, 3, 2, 3, 2, 0};
+    // int liste_tuiles_10x10[100] = {87, 23, 56, 91, 12, 78, 45, 67, 34, 89, 76, 98, 54, 21, 43, 65, 90, 32, 10, 55, 88, 11, 44, 77, 99, 22, 57, 33, 66, 79, 13, 46, 68, 35, 80, 24, 58, 92, 14, 47, 70, 36, 81, 25, 59, 93, 15, 48, 71, 38, 83, 26, 60, 94, 16, 49, 72, 39, 84, 27, 61, 95, 17, 50, 73, 40, 85, 28, 62, 96, 18, 51, 74, 41, 86, 29, 63, 97, 19, 52, 75, 42, 64, 82, 20, 53, 69, 37, 31, 30, 18, 51, 74, 41, 86, 29, 63, 97, 19, 0};
+    // init_grille(&grille_de_test);
+    // remplir_grille(&grille_de_test, liste_tuiles_4x4_h);
+    // lier_all_tuiles(&grille_de_test);
+    // afficher_grille(&grille_de_test);
+    // tuile_swap(&grille_de_test, 3,3,3,2);
+    // afficher_grille(&grille_de_test);
+    // tuile_swap(&grille_de_test,3,2,2,2);
+    // afficher_grille(&grille_de_test);
+    // tuile_swap(&grille_de_test,1,2,1,1);
+    // afficher_grille(&grille_de_test);
+    // tuile_info(&grille_de_test,2,0);
+    // coups_possibles_maj(&grille_de_test);
 }
