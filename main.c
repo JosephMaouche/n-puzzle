@@ -4,10 +4,8 @@
 
 #define N 4 // Taille du jeu
 // Mouvements de la case vide
-#define UP 0
-#define DOWN 1
-#define LEFT 2
-#define RIGHT 3
+//                          UP  DOWN LEFT RIGHT
+bool coups_possibles[4] = {true,true,true,true};
 
 // Structure d'une tuile :
 struct Tuile
@@ -25,8 +23,8 @@ struct Tuile
 struct Grille
 {
     struct Tuile *grid[N][N]; // Grille de jeu de taille N par N
-    int h;                    // Valeur heuristique (Manhattan Distance)    | Aglortihme A*
-    int g;                    // Cout                                       | Aglortihme A*
+    int h;                    // Valeur heuristique (Manhattan Distance)    | Algorithme A*
+    int g;                    // Cout                                       | Algorithme A*
     int move_used;            // Mouvement utilisé pour arriver à cette grille 
     int empty_x;              // coordonnée x de la tuile vide
     int empty_y;              // coordonnée y de la tuile vide
@@ -167,6 +165,26 @@ void tuile_info(struct Grille *grille, int x, int y)
     printf("----------------------------------------------------\n");
 }
 
+void coups_possibles_maj(struct Grille *grille)
+// Fonction qui met à jour les coups jouables en fonction de la position de la case vide.
+{
+    int x0 = grille->empty_x;
+    int y0 = grille->empty_y;
+
+    if (x0 == 0)
+        coups_possibles[0] = false;
+    if (x0 == N-1)
+        coups_possibles[1] = false;
+    if (y0 == 0)
+        coups_possibles[2] = false;
+    if (y0 == N-1)
+        coups_possibles[3] = false;
+    
+    //debug
+    printf("UP:%s\nDOWN:%s\nLEFT:%s\nRIGHT:%s\n",coups_possibles[0]?"true":"false",coups_possibles[1]?"true":"false",coups_possibles[2]?"true":"false",coups_possibles[3]?"true":"false");
+}
+
+
 void tuile_swap(struct Grille *grille, int x0, int y0, int xt, int yt)
 {
     
@@ -176,11 +194,9 @@ void tuile_swap(struct Grille *grille, int x0, int y0, int xt, int yt)
     {
         grille->grid[x0][y0] = grille->grid[xt][yt]; // La première tuile prend la place de la seconde
         grille->grid[xt][yt] = temp; // La seconde tuile prend la place de la première
-        
         // Mise à jour des coordonnées x et y pour la tuile vide de la grille
         grille->empty_x = xt;
         grille->empty_y = yt;
-        
         // Mise à jour des coordonnées x et y pour chaque tuile
         grille->grid[x0][y0]->x = x0;
         grille->grid[x0][y0]->y = y0;
@@ -206,19 +222,15 @@ void tuile_swap(struct Grille *grille, int x0, int y0, int xt, int yt)
     {
         grille->grid[x0][y0] = grille->grid[xt][yt-1]; // La première tuile prend la place de la seconde
         grille->grid[xt][yt-1] = temp; // La seconde tuile prend la place de la première
-        
         // Mise à jour des coordonnées x et y pour la tuile vide de la grille
         grille->empty_x = xt;
         grille->empty_y = yt-1;
-        
         // Mise à jour des coordonnées x et y pour chaque tuile
         grille->grid[x0][y0]->x = x0;
         grille->grid[x0][y0]->y = y0;
         grille->grid[xt][yt-1]->x = xt;
         grille->grid[xt][yt-1]->y = yt-1;
     }
-    
-    
 }
 
 int main()
@@ -237,7 +249,6 @@ int main()
     afficher_grille(&grille_de_test);
     tuile_swap(&grille_de_test,1,2,1,1);
     afficher_grille(&grille_de_test);
-    // tuile_info(&grille_de_test,2,1);
-    tuile_info(&grille_de_test,1,0);
-    // tuile_info(&grille_de_test,3,2);
+    tuile_info(&grille_de_test,2,0);
+    coups_possibles_maj(&grille_de_test);
 }
