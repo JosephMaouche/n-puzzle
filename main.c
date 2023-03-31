@@ -5,8 +5,12 @@
 
 #define N 4 // Taille du jeu
 // Mouvements de la case vide
-//                          UP  DOWN LEFT RIGHT
+//                       0UP  1DOWN 2LEFT 3RIGHT
 bool mouv_possibles[4] = {true,true,true,true};
+#define UP 0 
+#define DOWN 1 
+#define LEFT 2 
+#define RIGHT 3
 
 // Structure d'une tuile :
 struct Tuile
@@ -170,26 +174,30 @@ void tuile_info(struct Grille *grille, int x, int y)
 void mouv_possibles_maj(struct Grille *grille)
 // Fonction qui met à jour les mouvements jouables en fonction de la position de la case vide.
 {
+    for (int i = 0; i < 4; i++)
+    {
+       mouv_possibles[i] = true;
+    }
+    
     int x0 = grille->empty_x;
     int y0 = grille->empty_y;
 
-    if (x0 == 0)
+    if (x0 == 0 || grille->grid[x0-1][y0]->width == 2)
         mouv_possibles[0] = false;
-    if (x0 == N-1)
+    if (x0 == N-1 || grille->grid[x0+1][y0]->width == 2)
         mouv_possibles[1] = false;
-    if (y0 == 0)
+    if (y0 == 0 || grille->grid[x0][y0-1]->height == 2)
         mouv_possibles[2] = false;
-    if (y0 == N-1)
+    if (y0 == N-1 || grille->grid[x0][y0+1]->height == 2)
         mouv_possibles[3] = false;
     
     //debug
-    printf("UP:%s\nDOWN:%s\nLEFT:%s\nRIGHT:%s\n",mouv_possibles[0]?"true":"false",mouv_possibles[1]?"true":"false",mouv_possibles[2]?"true":"false",mouv_possibles[3]?"true":"false");
+    printf("UP :%s DOWN:%s LEFT:%s RIGHT:%s\n",mouv_possibles[0]?"true":"false",mouv_possibles[1]?"true":"false",mouv_possibles[2]?"true":"false",mouv_possibles[3]?"true":"false");
 }
 
 void tuile_swap(struct Grille *grille, int xt, int yt)
 {
-    int x0 = grille->empty_x;
-    int y0 = grille->empty_y;
+    int x0 = grille->empty_x, y0 = grille->empty_y;
 
     struct Tuile *temp = grille->grid[x0][y0]; // Stockage temporaire de la première tuile
 
@@ -264,11 +272,31 @@ struct Grille dupliquer_grille(struct Grille *grille) {
     return *res;
 }
 
+void deplacer(struct Grille *grille,int direction)
+{
+    // vecteurs directionnels avec les coordonnées des cellules voisines (x,y) d'une tuile de la grille
+    // coord de la tuile du haut = (x-1,y),du bas = (x+1,y),de gauche = (x,y+1) et de droite = (x,y-1)
+    int vect_x[4]  = {-1, 1, 0, 0};
+    int vect_y[4] = {0, 0, -1, 1};
+    int x0 = grille->empty_x, y0 = grille->empty_y;
+    tuile_swap(grille, x0 + vect_x[direction], y0 + vect_y[direction]);
+}
+
+// struct Grille etats_possibles(struct Grille *grille){
+//     struct Grille *etats = malloc(4*sizeof(struct Grille)); // Allouer de la mémoire pour la grille dupliquée
+//     for (int i = 0; i < 4; i++)
+//     {
+//         etats[i] = dupliquer_grille(grille);
+//     }
+    
+//     return *etats;
+// }
+
 int main()
 {
     struct Grille grille_de_test;
     struct Grille grille_de_test_2;
-    int liste_tuiles_4x4[16] = {1, 2, 3, 3, 4, 4, 5, 6, 7, 8, 5, 9, 10, 11, 12, 0};
+    int liste_tuiles_4x4[16] = {1, 2, 3, 3, 4, 4, 5, 6, 7, 8, 9, 10, 7, 11, 12, 0};
     int liste_tuiles_4x4_h[16] = {7, 1, 3, 3, 7, 4, 4, 5, 8, 0, 10, 9, 11, 2, 12, 6};
 
 
@@ -277,16 +305,17 @@ int main()
     // int liste_tuiles_10x10[100] = {87, 23, 56, 91, 12, 78, 45, 67, 34, 89, 76, 98, 54, 21, 43, 65, 90, 32, 10, 55, 88, 11, 44, 77, 99, 22, 57, 33, 66, 79, 13, 46, 68, 35, 80, 24, 58, 92, 14, 47, 70, 36, 81, 25, 59, 93, 15, 48, 71, 38, 83, 26, 60, 94, 16, 49, 72, 39, 84, 27, 61, 95, 17, 50, 73, 40, 85, 28, 62, 96, 18, 51, 74, 41, 86, 29, 63, 97, 19, 52, 75, 42, 64, 82, 20, 53, 69, 37, 31, 30, 18, 51, 74, 41, 86, 29, 63, 97, 19, 0};
     init_grille(&grille_de_test);
     special_sort(liste_tuiles_4x4_h,0,16);
-    // lier_all_tuiles(&grille_de_test);
-    remplir_grille(&grille_de_test, liste_tuiles_4x4_h);
-    // afficher_grille(&grille_de_test);
-    // tuile_info(&grille_de_test,4,3);
-    // tuile_swap(&grille_de_test,4,3);
+    remplir_grille(&grille_de_test, liste_tuiles_4x4);
+    lier_all_tuiles(&grille_de_test);
     afficher_grille(&grille_de_test);
-    grille_de_test_2 = dupliquer_grille(&grille_de_test);
-    afficher_grille(&grille_de_test_2);
-    tuile_info(&grille_de_test,0,2);
-    tuile_info(&grille_de_test,0,2);
+    // tuile_swap(&grille_de_test,grille_de_test.empty_x + (-1),3);
+    // afficher_grille(&grille_de_test);
+    // tuile_info(&grille_de_test,3,2);
+    // afficher_grille(&grille_de_test);
+    // grille_de_test_2 = dupliquer_grille(&grille_de_test);
+    // afficher_grille(&grille_de_test_2);
+    // tuile_info(&grille_de_test,0,2);
+    // tuile_info(&grille_de_test,0,2);
     // etats_possibles(&grille_de_test);
     // afficher_grille(&grille_de_test);
     // tuile_swap(&grille_de_test,3,2,2,2);
@@ -294,5 +323,4 @@ int main()
     // tuile_swap(&grille_de_test,1,2,1,1);
     // afficher_grille(&grille_de_test);
     // tuile_info(&grille_de_test,2,0);
-    // mouv_possibles_maj(&grille_de_test);
 }
