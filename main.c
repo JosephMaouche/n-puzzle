@@ -6,7 +6,7 @@
 #define N 4 // Taille du jeu
 // Mouvements de la case vide
 //                          UP  DOWN LEFT RIGHT
-bool coups_possibles[4] = {true,true,true,true};
+bool mouv_possibles[4] = {true,true,true,true};
 
 // Structure d'une tuile :
 struct Tuile
@@ -38,7 +38,7 @@ void init_grille(struct Grille *grille)
     {
         for (int j = 0; j < N; j++)
         {
-            grille->grid[i][j] = malloc(sizeof(struct Tuile)); // Allocation memoire dynamique de la tuile
+            grille->grid[i][j] = malloc(sizeof(struct Tuile)); // Allocation mémoire dynamique de la tuile
             grille->grid[i][j]->num = 1;                       // Numero de la tuile, par défaut 1
             grille->grid[i][j]->x = i;                         // coordonnée x de la tuile
             grille->grid[i][j]->y = j;                         // coordonnée y de la tuile
@@ -47,7 +47,8 @@ void init_grille(struct Grille *grille)
         }
     }
     // Initialisation de la case vide
-    grille->grid[N - 1][N - 1]->num = -1;
+    grille->grid[N - 1][N - 1]->num = 0;
+    grille->empty_x = N - 1, grille->empty_y = N - 1;
     grille->g = 0;  // Valeur par défaut pour le cout 
 }
 
@@ -133,7 +134,7 @@ void remplir_grille(struct Grille *grille, int *liste_tuiles)
     {
         int x = i / N;
         int y = i % N;
-        struct Tuile *tuile = malloc(sizeof(struct Tuile)); // Allocation dynamique de la tuile.
+        struct Tuile *tuile = malloc(sizeof(struct Tuile)); // Allocation mémoire dynamique de la tuile.
         tuile->num = liste_tuiles[i];                       // Assignation du numéro de la tuile.
         if (tuile->num == 0)
         {
@@ -166,29 +167,30 @@ void tuile_info(struct Grille *grille, int x, int y)
     printf("----------------------------------------------------\n");
 }
 
-void coups_possibles_maj(struct Grille *grille)
-// Fonction qui met à jour les coups jouables en fonction de la position de la case vide.
+void mouv_possibles_maj(struct Grille *grille)
+// Fonction qui met à jour les mouvements jouables en fonction de la position de la case vide.
 {
     int x0 = grille->empty_x;
     int y0 = grille->empty_y;
 
     if (x0 == 0)
-        coups_possibles[0] = false;
+        mouv_possibles[0] = false;
     if (x0 == N-1)
-        coups_possibles[1] = false;
+        mouv_possibles[1] = false;
     if (y0 == 0)
-        coups_possibles[2] = false;
+        mouv_possibles[2] = false;
     if (y0 == N-1)
-        coups_possibles[3] = false;
+        mouv_possibles[3] = false;
     
     //debug
-    printf("UP:%s\nDOWN:%s\nLEFT:%s\nRIGHT:%s\n",coups_possibles[0]?"true":"false",coups_possibles[1]?"true":"false",coups_possibles[2]?"true":"false",coups_possibles[3]?"true":"false");
+    printf("UP:%s\nDOWN:%s\nLEFT:%s\nRIGHT:%s\n",mouv_possibles[0]?"true":"false",mouv_possibles[1]?"true":"false",mouv_possibles[2]?"true":"false",mouv_possibles[3]?"true":"false");
 }
 
-
-void tuile_swap(struct Grille *grille, int x0, int y0, int xt, int yt)
+void tuile_swap(struct Grille *grille, int xt, int yt)
 {
-    
+    int x0 = grille->empty_x;
+    int y0 = grille->empty_y;
+
     struct Tuile *temp = grille->grid[x0][y0]; // Stockage temporaire de la première tuile
 
     if (grille->grid[xt][yt]->height == 1 && grille->grid[xt][yt]->width == 1)
@@ -196,13 +198,10 @@ void tuile_swap(struct Grille *grille, int x0, int y0, int xt, int yt)
         grille->grid[x0][y0] = grille->grid[xt][yt]; // La première tuile prend la place de la seconde
         grille->grid[xt][yt] = temp; // La seconde tuile prend la place de la première
         // Mise à jour des coordonnées x et y pour la tuile vide de la grille
-        grille->empty_x = xt;
-        grille->empty_y = yt;
+        grille->empty_x = xt, grille->empty_y = yt;;
         // Mise à jour des coordonnées x et y pour chaque tuile
-        grille->grid[x0][y0]->x = x0;
-        grille->grid[x0][y0]->y = y0;
-        grille->grid[xt][yt]->x = xt;
-        grille->grid[xt][yt]->y = yt;
+        grille->grid[x0][y0]->x = x0, grille->grid[x0][y0]->y = y0;
+        grille->grid[xt][yt]->x = xt, grille->grid[xt][yt]->y = yt;
     }
     else if (grille->grid[xt][yt]->height == 2 && grille->grid[xt][yt]->width == 1)
     // si c'est une tuile longue
@@ -210,13 +209,10 @@ void tuile_swap(struct Grille *grille, int x0, int y0, int xt, int yt)
         grille->grid[x0][y0] = grille->grid[xt-1][yt]; // La première tuile prend la place de la seconde
         grille->grid[xt-1][yt] = temp; // La seconde tuile prend la place de la première
         // Mise à jour des coordonnées x et y pour la tuile vide de la grille
-        grille->empty_x = xt-1;
-        grille->empty_y = yt;
+        grille->empty_x = xt-1, grille->empty_y = yt;
         // Mise à jour des coordonnées x et y pour chaque tuile
-        grille->grid[x0][y0]->x = x0;
-        grille->grid[x0][y0]->y = y0;
-        grille->grid[xt-1][yt]->x = xt-1;
-        grille->grid[xt-1][yt]->y = yt;
+        grille->grid[x0][y0]->x = x0, grille->grid[x0][y0]->y = y0;
+        grille->grid[xt-1][yt]->x = xt-1, grille->grid[xt-1][yt]->y = yt;
     }
     else if (grille->grid[xt][yt]->height == 1 && grille->grid[xt][yt]->width == 2)
     // si c'est une tuile large
@@ -224,57 +220,79 @@ void tuile_swap(struct Grille *grille, int x0, int y0, int xt, int yt)
         grille->grid[x0][y0] = grille->grid[xt][yt-1]; // La première tuile prend la place de la seconde
         grille->grid[xt][yt-1] = temp; // La seconde tuile prend la place de la première
         // Mise à jour des coordonnées x et y pour la tuile vide de la grille
-        grille->empty_x = xt;
-        grille->empty_y = yt-1;
+        grille->empty_x = xt, grille->empty_y = yt-1;
         // Mise à jour des coordonnées x et y pour chaque tuile
-        grille->grid[x0][y0]->x = x0;
-        grille->grid[x0][y0]->y = y0;
-        grille->grid[xt][yt-1]->x = xt;
-        grille->grid[xt][yt-1]->y = yt-1;
+        grille->grid[x0][y0]->x = x0, grille->grid[x0][y0]->y = y0;
+        grille->grid[xt][yt-1]->x = xt, grille->grid[xt][yt-1]->y = yt-1;
     }
 }
-/////////////////////////////////////////////////////////
+
+struct Grille dupliquer_grille(struct Grille *grille) {
+    struct Grille *res = malloc(sizeof(struct Grille)); // Allouer de la mémoire pour la grille dupliquée
+    res->h = grille->h, res->g = grille->g;
+    res->move_used = grille->move_used;
+    res->empty_x = grille->empty_x, res->empty_y = grille->empty_y;
+
+    // Dupliquer chaque tuile de la grille
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            // Sinon, dupliquer la tuile
+            struct Tuile *tuile_d = malloc(sizeof(struct Tuile));
+            tuile_d->num = grille->grid[i][j]->num;
+            tuile_d->x = grille->grid[i][j]->x;
+            tuile_d->y = grille->grid[i][j]->y;
+            tuile_d->width = grille->grid[i][j]->width;
+            tuile_d->height = grille->grid[i][j]->height;
+            tuile_d->isemptyone = grille->grid[i][j]->isemptyone;
+
+            if (tuile_d->width == 2) { // Si la tuile est longue, dupliquer la seconde partie
+                struct Tuile *part_dupliquee = malloc(sizeof(struct Tuile));
+                part_dupliquee->num = grille->grid[i][j]->part->num;
+                part_dupliquee->x = grille->grid[i][j]->part->x;
+                part_dupliquee->y = grille->grid[i][j]->part->y;
+                part_dupliquee->width = grille->grid[i][j]->part->width;
+                part_dupliquee->height = grille->grid[i][j]->part->height;
+                part_dupliquee->isemptyone = grille->grid[i][j]->part->isemptyone;
+
+                tuile_d->part = part_dupliquee;
+            } else
+                tuile_d->part = NULL;
+
+            res->grid[i][j] = tuile_d;
+        }
+    }
+    return *res;
+}
 
 int main()
 {
     struct Grille grille_de_test;
+    struct Grille grille_de_test_2;
     int liste_tuiles_4x4[16] = {1, 2, 3, 3, 4, 4, 5, 6, 7, 8, 5, 9, 10, 11, 12, 0};
     int liste_tuiles_4x4_h[16] = {7, 1, 3, 3, 7, 4, 4, 5, 8, 0, 10, 9, 11, 2, 12, 6};
-    // int ouais = sizeof(liste_tuiles_4x4_h) / sizeof(liste_tuiles_4x4_h[0]);
-    // print_arr(liste_tuiles_4x4,16);
-    special_sort(liste_tuiles_4x4_h,0, 16);
-    print_arr(liste_tuiles_4x4_h,16);
-
-    printf("\npremier elem : %d\n",liste_tuiles_4x4_h[0]);
-    printf("dernier elem : %d\n",liste_tuiles_4x4_h[15]);
-
-    // int arr[16];
-    // for (int i = 1; i < 16; i++)
-    // {
-    //     arr[i-1] = liste_tuiles_4x4_h[i];
-    // }
-    // print_arr(arr,16);
-    
-    // int temp = liste_tuiles_4x4_h[0];
-    // liste_tuiles_4x4_h[0] = liste_tuiles_4x4_h[15];
-    // liste_tuiles_4x4_h[15] = temp;
-
-    // printf("premier elem : %d\n",liste_tuiles_4x4_h[0]);
-    // printf("dernier elem : %d\n",liste_tuiles_4x4_h[15]);
 
 
-    // int liste_tuiles_5x5[25] = {1, 2, 3, 3, 4, 4, 5, 6, 7, 8, 5, 9, 10, 11, 12, 2, 3, 2, 3, 2, 3, 2, 3, 2, 0};
+
+    int liste_tuiles_5x5[25] = {1, 2, 3, 3, 4, 4, 5, 6, 7, 8, 5, 9, 10, 11, 12, 2, 3, 2, 3, 2, 3, 2, 3, 2, 0};
     // int liste_tuiles_10x10[100] = {87, 23, 56, 91, 12, 78, 45, 67, 34, 89, 76, 98, 54, 21, 43, 65, 90, 32, 10, 55, 88, 11, 44, 77, 99, 22, 57, 33, 66, 79, 13, 46, 68, 35, 80, 24, 58, 92, 14, 47, 70, 36, 81, 25, 59, 93, 15, 48, 71, 38, 83, 26, 60, 94, 16, 49, 72, 39, 84, 27, 61, 95, 17, 50, 73, 40, 85, 28, 62, 96, 18, 51, 74, 41, 86, 29, 63, 97, 19, 52, 75, 42, 64, 82, 20, 53, 69, 37, 31, 30, 18, 51, 74, 41, 86, 29, 63, 97, 19, 0};
-    // init_grille(&grille_de_test);
-    // remplir_grille(&grille_de_test, liste_tuiles_4x4_h);
+    init_grille(&grille_de_test);
+    special_sort(liste_tuiles_4x4_h,0,16);
     // lier_all_tuiles(&grille_de_test);
+    remplir_grille(&grille_de_test, liste_tuiles_4x4_h);
     // afficher_grille(&grille_de_test);
-    // tuile_swap(&grille_de_test, 3,3,3,2);
+    // tuile_info(&grille_de_test,4,3);
+    // tuile_swap(&grille_de_test,4,3);
+    afficher_grille(&grille_de_test);
+    grille_de_test_2 = dupliquer_grille(&grille_de_test);
+    afficher_grille(&grille_de_test_2);
+    tuile_info(&grille_de_test,0,2);
+    tuile_info(&grille_de_test,0,2);
+    // etats_possibles(&grille_de_test);
     // afficher_grille(&grille_de_test);
     // tuile_swap(&grille_de_test,3,2,2,2);
     // afficher_grille(&grille_de_test);
     // tuile_swap(&grille_de_test,1,2,1,1);
     // afficher_grille(&grille_de_test);
     // tuile_info(&grille_de_test,2,0);
-    // coups_possibles_maj(&grille_de_test);
+    // mouv_possibles_maj(&grille_de_test);
 }
