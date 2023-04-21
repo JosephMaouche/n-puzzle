@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include "utilities.c"
+#include <math.h>
 
 #define N 4 // Taille du jeu
 // Mouvements de la case vide
@@ -43,7 +44,7 @@ void init_grille(struct Grille *grille)
         for (int j = 0; j < N; j++)
         {
             grille->grid[i][j] = malloc(sizeof(struct Tuile)); // Allocation mémoire dynamique de la tuile
-            grille->grid[i][j]->num = 1;                       // Numero de la tuile, par défaut 1
+            grille->grid[i][j]->num = -1;                       // Numero de la tuile, par défaut 1
             grille->grid[i][j]->x = i;                         // coordonnée x de la tuile
             grille->grid[i][j]->y = j;                         // coordonnée y de la tuile
             grille->grid[i][j]->width = 1;                     // taille simple par défaut
@@ -69,7 +70,7 @@ void lier_tuile(struct Grille *grille, struct Tuile *tuile)
                 // Si elle trouve une autre tuile avec le même numéro,
                 // elle lie les deux tuiles en mettant à jour leur champ "part".
                 // La fonction s'arrête dès qu'elle a trouvé une tuile correspondante.
-                // printf("La tuile %d est longue\n", grille->grid[i][j]->num); // Debug
+                printf("La tuile %d est longue\n", grille->grid[i][j]->num); // Debug
                 tuile->part = grille->grid[i][j];
                 // Si les deux tuiles sont sur le même axe X, il s'agit d'une tuile large et on change alors sa largeur.
                 if (tuile->x == grille->grid[i][j]->x)
@@ -166,7 +167,7 @@ void tuile_info(struct Grille *grille, int x, int y)
     printf("width : %d\n", grille->grid[x][y]->width);
     printf("height : %d\n", grille->grid[x][y]->height);
     printf("x,y : %d,%d\n", grille->grid[x][y]->x,grille->grid[x][y]->y);
-    printf("part memAdress : %p\n", &grille->grid[x][y]->part);
+    printf("part coord. (x,y) : (%d,%d) \n", grille->grid[x][y]->part->x,grille->grid[x][y]->part->y);
     printf("empty de la grille : (%d,%d)\n", grille->empty_x, grille->empty_y);
     printf("----------------------------------------------------\n");
 }
@@ -282,45 +283,43 @@ void deplacer(struct Grille *grille,int direction)
     tuile_swap(grille, x0 + vect_x[direction], y0 + vect_y[direction]);
 }
 
-// struct Grille etats_possibles(struct Grille *grille){
-//     struct Grille *etats = malloc(4*sizeof(struct Grille)); // Allouer de la mémoire pour la grille dupliquée
-//     for (int i = 0; i < 4; i++)
-//     {
-//         etats[i] = dupliquer_grille(grille);
-//     }
-    
-//     return *etats;
-// }
+void grille_load(struct Grille *grille,char* fichier)
+{
+    //  Fonction qui prend une grille non init. ainsi que le nom d'un fichier comportant une grille N*N.
+    //  Remplie la grille demandée tel que présenté dans le fichier.
+
+    int t,lettre,num,l=1;
+    FILE *fd = fopen(fichier, "r");
+    FILE *fd2 = fopen(fichier, "r");
+    // On parcours toutes les lignes afin d'avoir la taille du jeu dans "l"
+    while( (lettre = fgetc(fd)) !=EOF)
+    {
+        if (lettre == '\n')
+        l++;
+    }
+
+    fclose(fd);
+    int user_liste[l*l];
+    // Puis on parcours tout les caractères du fichier et on les ajoutes à notre liste "user_liste"
+    while (fscanf(fd2, "%d", &num) == 1) {
+        user_liste[t] = num;
+        t++;
+    }
+    fclose(fd2);
+    if (l*l != t)
+        printf("ERREUR : LE JEU EST INCOMPLET");
+    else
+    {
+        init_grille(grille);
+        remplir_grille(grille,user_liste);
+        lier_all_tuiles(grille);
+    }
+}
 
 int main()
 {
     struct Grille grille_de_test;
-    struct Grille grille_de_test_2;
-    int liste_tuiles_4x4[16] = {1, 2, 3, 3, 4, 4, 5, 6, 7, 8, 9, 10, 7, 11, 12, 0};
-    int liste_tuiles_4x4_h[16] = {7, 1, 3, 3, 7, 4, 4, 5, 8, 0, 10, 9, 11, 2, 12, 6};
-
-
-
-    int liste_tuiles_5x5[25] = {1, 2, 3, 3, 4, 4, 5, 6, 7, 8, 5, 9, 10, 11, 12, 2, 3, 2, 3, 2, 3, 2, 3, 2, 0};
-    // int liste_tuiles_10x10[100] = {87, 23, 56, 91, 12, 78, 45, 67, 34, 89, 76, 98, 54, 21, 43, 65, 90, 32, 10, 55, 88, 11, 44, 77, 99, 22, 57, 33, 66, 79, 13, 46, 68, 35, 80, 24, 58, 92, 14, 47, 70, 36, 81, 25, 59, 93, 15, 48, 71, 38, 83, 26, 60, 94, 16, 49, 72, 39, 84, 27, 61, 95, 17, 50, 73, 40, 85, 28, 62, 96, 18, 51, 74, 41, 86, 29, 63, 97, 19, 52, 75, 42, 64, 82, 20, 53, 69, 37, 31, 30, 18, 51, 74, 41, 86, 29, 63, 97, 19, 0};
-    init_grille(&grille_de_test);
-    special_sort(liste_tuiles_4x4_h,0,16);
-    remplir_grille(&grille_de_test, liste_tuiles_4x4);
-    lier_all_tuiles(&grille_de_test);
+    char finit[] = "init.txt";
+    grille_load(&grille_de_test, finit);
     afficher_grille(&grille_de_test);
-    // tuile_swap(&grille_de_test,grille_de_test.empty_x + (-1),3);
-    // afficher_grille(&grille_de_test);
-    // tuile_info(&grille_de_test,3,2);
-    // afficher_grille(&grille_de_test);
-    // grille_de_test_2 = dupliquer_grille(&grille_de_test);
-    // afficher_grille(&grille_de_test_2);
-    // tuile_info(&grille_de_test,0,2);
-    // tuile_info(&grille_de_test,0,2);
-    // etats_possibles(&grille_de_test);
-    // afficher_grille(&grille_de_test);
-    // tuile_swap(&grille_de_test,3,2,2,2);
-    // afficher_grille(&grille_de_test);
-    // tuile_swap(&grille_de_test,1,2,1,1);
-    // afficher_grille(&grille_de_test);
-    // tuile_info(&grille_de_test,2,0);
 }
