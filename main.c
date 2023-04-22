@@ -283,12 +283,12 @@ void deplacer(struct Grille *grille,int direction)
     tuile_swap(grille, x0 + vect_x[direction], y0 + vect_y[direction]);
 }
 
-void grille_load(struct Grille *grille,char* fichier)
+int grille_load(struct Grille *grille,char* fichier)
 {
-    //  Fonction qui prend une grille non init. ainsi que le nom d'un fichier comportant une grille N*N.
-    //  Remplie la grille demandée tel que présenté dans le fichier.
+    /* Fonction qui prend une grille non init. ainsi que le nom d'un fichier comportant une grille N*N.
+       Remplie la grille demandée tel que présenté dans le fichier et renvoie la taille du jeu. */
 
-    int t,lettre,num,l=1;
+    int lettre,num,l=1;
     FILE *fd = fopen(fichier, "r");
     FILE *fd2 = fopen(fichier, "r");
     // On parcours toutes les lignes afin d'avoir la taille du jeu dans "l"
@@ -298,22 +298,21 @@ void grille_load(struct Grille *grille,char* fichier)
         l++;
     }
 
-    fclose(fd);
     int user_liste[l*l];
-    // Puis on parcours tout les caractères du fichier et on les ajoutes à notre liste "user_liste"
-    while (fscanf(fd2, "%d", &num) == 1) {
-        user_liste[t] = num;
-        t++;
-    }
-    fclose(fd2);
-    if (l*l != t)
-        printf("ERREUR : LE JEU EST INCOMPLET");
-    else
+    // Puis on parcours tout les caractères du fichier et on les ajoutes à notre vecteur "user_liste"
+    for (int i = 0; i < l*l; i++)
     {
-        init_grille(grille);
-        remplir_grille(grille,user_liste);
-        lier_all_tuiles(grille);
+        fscanf(fd2, "%d", &num);
+        // printf("user_liste[%d] = %d\n",i,user_liste[i]); //Debug
+        user_liste[i] = num;
     }
+    fclose(fd);
+    fclose(fd2);
+    init_grille(grille);
+    remplir_grille(grille,user_liste);
+    lier_all_tuiles(grille);
+
+    return l;
 }
 
 int main()
