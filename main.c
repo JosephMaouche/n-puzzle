@@ -4,7 +4,7 @@
 #include "utilities.c"
 #include <math.h>
 
-#define N 4 // Taille du jeu
+#define N 3 // Taille du jeu
 // Mouvements de la case vide
 //                       0UP  1DOWN 2LEFT 3RIGHT
 bool mouv_possibles[4] = {true,true,true,true};
@@ -167,7 +167,10 @@ void tuile_info(struct Grille *grille, int x, int y)
     printf("width : %d\n", grille->grid[x][y]->width);
     printf("height : %d\n", grille->grid[x][y]->height);
     printf("x,y : %d,%d\n", grille->grid[x][y]->x,grille->grid[x][y]->y);
-    printf("part coord. (x,y) : (%d,%d) \n", grille->grid[x][y]->part->x,grille->grid[x][y]->part->y);
+    if (grille->grid[x][y]->part == NULL)
+        printf("part coord. (x,y) : AUCUNE \n");
+    else
+        printf("part coord. (x,y) : (%d,%d) \n", grille->grid[x][y]->part->x,grille->grid[x][y]->part->y);
     printf("empty de la grille : (%d,%d)\n", grille->empty_x, grille->empty_y);
     printf("----------------------------------------------------\n");
 }
@@ -319,6 +322,11 @@ int main()
 {
     struct Grille grille_de_test;
     char finit[] = "init.txt";
+    struct Grille grille_goal;
+    char fgoal[] = "goal.txt";
     grille_load(&grille_de_test, finit);
     afficher_grille(&grille_de_test);
+    tuile_info(&grille_de_test,0,1);
+    // grille_load(&grille_goal, fgoal);
+    // afficher_grille(&grille_goal);
 }
