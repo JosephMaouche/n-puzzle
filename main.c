@@ -70,7 +70,7 @@ void lier_tuile(struct Grille *grille, struct Tuile *tuile)
                 // Si elle trouve une autre tuile avec le même numéro,
                 // elle lie les deux tuiles en mettant à jour leur champ "part".
                 // La fonction s'arrête dès qu'elle a trouvé une tuile correspondante.
-                printf("La tuile %d est longue\n", grille->grid[i][j]->num); // Debug
+                // printf("La tuile %d est longue\n", grille->grid[i][j]->num); // Debug
                 tuile->part = grille->grid[i][j];
                 // Si les deux tuiles sont sur le même axe X, il s'agit d'une tuile large et on change alors sa largeur.
                 if (tuile->x == grille->grid[i][j]->x)
@@ -318,6 +318,24 @@ int grille_load(struct Grille *grille,char* fichier)
     return l;
 }
 
+int heuristic(struct Grille *i, struct Grille *g)
+// Calcul l'heuristique de la grille (i) en fonction de sa grille de din (g)
+{
+    int h = 0;
+    for (int x = 0; x < N; x++)
+    {
+        for (int y = 0; y < N; y++)
+        {
+            // Dès qu'une tuile n'est pas à sa place, on incrémente le score de 1.
+            if (i->grid[x][y]->num != g->grid[x][y]->num)
+                h++; 
+        }
+    }
+    // On met à jour la valeur heuristique de la grille.
+    i->h = h;
+    return h;
+}
+
 int main()
 {
     struct Grille grille_de_test;
@@ -325,8 +343,11 @@ int main()
     struct Grille grille_goal;
     char fgoal[] = "goal.txt";
     grille_load(&grille_de_test, finit);
-    afficher_grille(&grille_de_test);
-    tuile_info(&grille_de_test,0,1);
-    // grille_load(&grille_goal, fgoal);
+    grille_load(&grille_goal, fgoal);
+    // heuristic(&grille_de_test, &grille_goal,3);
+    // tuile_info(&grille_de_test,2,2);
+    int h = heuristic(&grille_de_test, &grille_goal);
+    printf("H score ? : %d",h);
     // afficher_grille(&grille_goal);
+    // afficher_grille(&grille_de_test);
 }
