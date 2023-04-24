@@ -18,7 +18,7 @@
     - dupliquer_grille(struct Grille *grille)
     - deplacer(struct Grille *grille,int direction)
     - grille_load(struct Grille *grille,char* fichier)
-    
+
     - DEBUG : tuile_info(struct Grille *grille, int x, int y)
 
     _ Tuile
@@ -49,7 +49,7 @@ struct Tuile
 // Structure d'une grille :
 struct Grille
 {
-    struct Tuile *grid[N][N]; // Grille de jeu de taille N par N
+    struct Tuile *grid[N][N];// Grille de jeu de taille N par N
     int h;                    // Valeur heuristique (Manhattan Distance)    | Algorithme A*
     int g;                    // Cout                                       | Algorithme A*
     int move_used;            // Mouvement utilisé pour arriver à cette grille 
@@ -73,6 +73,7 @@ void init_grille(struct Grille *grille)
         }
     }
     // Initialisation de la case vide
+    grille->move_used = -1;
     grille->grid[N - 1][N - 1]->num = 0;
     grille->empty_x = N - 1, grille->empty_y = N - 1;
     grille->g = 0;  // Valeur par défaut pour le cout 
@@ -337,4 +338,49 @@ int grille_load(struct Grille *grille,char* fichier)
     lier_all_tuiles(grille);
 
     return l;
+}
+
+struct Grille **grilles_voisines(struct Grille *grille){
+/*
+    Fonction qui retourne une liste de * de grilles dites voisines, en fonctions des coups possibles de la grille.
+    On suppose donc que la liste des coups possibles est à jour avec la grille passée en paramètres.
+*/
+    int nb_v;
+    struct Grille temp, **liste_v = malloc(nb_v*sizeof(struct Grille)); //liste de nb_v pointeurs de grille
+
+    for (int i = 0; i < 4; i++)
+    /*
+        Si le coup est possible et que ce n'est pas le coup utilisé pour arriver à la grille,
+        on incrémente le nombre de coups possibles.
+    */
+    {
+        if(mouv_possibles[i])
+        {
+            if(!(i == grille->move_used))
+                nb_v++;
+            else
+            // Autrement on corrige la liste des coups possibles.
+                mouv_possibles[i] = false;
+        }
+    }
+
+    for (int i = 0; i < nb_v; i++)
+    /*
+        Pour chaque coups dorénavant possible, on duplique la grille actuelle et on applique le coup,
+        puis on ajoute l'adresse de cette nouvelle grille voisine à la liste. On oublie pas de modifier
+        "move_used" de la grille avec le coup utilisé.
+    */
+    {
+        if (mouv_possibles[i])
+        {
+            temp = dupliquer_grille(grille);
+            deplacer(&temp,i);
+            temp.move_used = i;
+            // afficher_grille(&temp); Debug
+            liste_v[i] = &temp;
+        }
+        
+    }
+
+    return liste_v;
 }
