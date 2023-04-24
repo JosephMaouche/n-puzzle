@@ -10,12 +10,16 @@
 
     - heuristic(struct Grille *i, struct Grille *g)
     - compter_inversions(struct Grille *grille)
-    - solvable(struct Grille *grille)
+    - issolvable(struct Grille *grille)
+    - issolved(struct Grille *i, struct Grille *g)
     
 */
 
 int heuristic(struct Grille *i, struct Grille *g)
-// Calcul l'heuristique de la grille (i) en fonction de sa grille de fin (g)
+/*
+    Calcul l'heuristique de la grille (i) en fonction de sa grille de fin (g)
+    avec la méthode Hamming Distance/Misplaced Tiles.
+*/
 {
     int h = 0;
     for (int x = 0; x < N; x++)
@@ -79,7 +83,7 @@ int compter_inversions(struct Grille *grille) {
 }
 
 // Vérifie si la grille est résoluble ou non
-bool solvable(struct Grille *grille) {
+bool issolvable(struct Grille *grille) {
     int inversions = compter_inversions(grille);
 // Si N est impair, la grille est résoluble si le nombre d'inversions est pair
     if (N % 2 == 1) {
@@ -106,6 +110,21 @@ bool solvable(struct Grille *grille) {
     }
 }
 
+bool issolved(struct Grille *i, struct Grille *g){
+    for (int x = 0; x < N; x++)
+    {
+        for (int y = 0; y < N; y++)
+        {
+            // Si une tuile n'est pas à sa place, la grille n'est pas résolu et on renvoie Faux.
+            if (i->grid[x][y]->num != g->grid[x][y]->num)
+                return 0; 
+        }
+    }
+    // Autrement elle est résolue.
+    return 1;
+
+}
+
 int main()
 {
     struct Grille grille_de_test;
@@ -116,8 +135,8 @@ int main()
     grille_load(&grille_goal, fgoal);
     // heuristic(&grille_de_test, &grille_goal,3);
     // tuile_info(&grille_de_test,2,2);
-    int h = heuristic(&grille_de_test, &grille_goal);
-    printf("H score ? : %d",h);
+    int h = issolved(&grille_de_test, &grille_goal);
+    printf("Solved ? : %d",h);
     // afficher_grille(&grille_goal);
     // afficher_grille(&grille_de_test);
 }
