@@ -4,6 +4,16 @@
 #include <math.h>
 #include "main.c"
 
+/*
+                            << ALGO.C >>
+    Fichiers annexe du jeu avec des fonctions de calculs et recherches relaté à la résolution :
+
+    - heuristic(struct Grille *i, struct Grille *g)
+    - compter_inversions(struct Grille *grille)
+    - solvable(struct Grille *grille)
+    
+*/
+
 int heuristic(struct Grille *i, struct Grille *g)
 // Calcul l'heuristique de la grille (i) en fonction de sa grille de fin (g)
 {

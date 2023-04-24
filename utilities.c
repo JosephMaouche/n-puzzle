@@ -1,5 +1,16 @@
 #include <stdio.h>
 
+/*
+                            << UTILITIES.C >>
+    Fichier annexe avec des fonctions de traitement de vecteur, non relaté aux structures du jeu :
+    - swap(int* a, int* b)
+    - partition(int arr[], int low, int high)
+    - quicksort(int arr[], int low, int high)
+    - special_sort(int arr[], int low, int high)
+
+    - DEBUG : print_arr(int arr[],int n)
+*/
+
 // Fonction pour échanger deux éléments
 void swap(int* a, int* b) {
     int temp = *a;
@@ -46,6 +57,6 @@ void special_sort(int arr[], int low, int high) {
 
 void print_arr(int arr[],int n){
     for (int i = 0; i < n; i++) {
-        printf("%d ", arr[i]);
+        printf(" arr[%d] : %d ",i, arr[i]);
     }
 }

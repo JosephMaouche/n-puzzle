@@ -4,6 +4,27 @@
 #include "utilities.c"
 #include <math.h>
 
+/*
+                            << MAIN.C >>
+    Fichiers corps du jeu avec les structures ainsi que leurs fonctions associées :
+
+    - init_grille(struct Grille *grille)
+    - lier_tuile(struct Grille *grille, struct Tuile *tuile)
+    - lier_all_tuiles(struct Grille *grille)
+    - afficher_grille(struct Grille *grille)
+    - remplir_grille(struct Grille *grille, int *liste_tuiles)
+    - mouv_possibles_maj(struct Grille *grille)
+    - tuile_swap(struct Grille *grille, int xt, int yt)
+    - dupliquer_grille(struct Grille *grille)
+    - deplacer(struct Grille *grille,int direction)
+    - grille_load(struct Grille *grille,char* fichier)
+    
+    - DEBUG : tuile_info(struct Grille *grille, int x, int y)
+
+    _ Tuile
+    _ Grille
+*/
+
 #define N 3 // Taille du jeu
 // Mouvements de la case vide
 //                       0UP  1DOWN 2LEFT 3RIGHT
