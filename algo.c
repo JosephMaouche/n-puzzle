@@ -22,8 +22,8 @@ int heuristic(struct Grille *i, struct Grille *g)
     {
         for (int y = 0; y < N; y++)
         {
-            // Dès qu'une tuile n'est pas à sa place, on incrémente le score de 1.
-            if (i->grid[x][y]->num != g->grid[x][y]->num)
+            // Dès qu'une tuile n'est pas à sa place et que ce n'est pas la case vide, on incrémente le score de 1.
+            if (i->grid[x][y]->num != g->grid[x][y]->num && i->grid[x][y]->num > 0)
                 h++; 
         }
     }
