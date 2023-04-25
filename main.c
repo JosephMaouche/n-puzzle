@@ -2,7 +2,6 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include "utilities.c"
-#include <math.h>
 
 /*
                             << MAIN.C >>
@@ -25,7 +24,7 @@
     _ Grille
 */
 
-#define N 3 // Taille du jeu
+#define N 4 // Taille du jeu
 // Mouvements de la case vide
 //                       0UP  1DOWN 2LEFT 3RIGHT
 bool mouv_possibles[4] = {true,true,true,true};
@@ -334,6 +333,7 @@ int grille_load(struct Grille *grille,char* fichier)
     fclose(fd);
     fclose(fd2);
     init_grille(grille);
+    grille->move_used = 4;
     remplir_grille(grille,user_liste);
     lier_all_tuiles(grille);
 
@@ -347,7 +347,7 @@ struct Grille *grilles_voisines(struct Grille *grille){
 */
     int nb_v;
     struct Grille temp, *liste_v = malloc(nb_v*sizeof(struct Grille)); //liste de nb_v pointeurs de grille
-
+    mouv_possibles_maj(grille);
     for (int i = 0; i < 4; i++)
     /*
         Si le coup est possible et que ce n'est pas le coup utilisé pour arriver à la grille,
