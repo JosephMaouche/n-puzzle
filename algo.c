@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
-#include <math.h>
-#include "main.c"
+#include <limits.h>
+#include "pile.c"
 
 /*
                             << ALGO.C >>
@@ -14,6 +14,10 @@
     - issolved(struct Grille *i, struct Grille *g)
     
 */
+
+#define FOUND 939
+#define MAX_SOLUTION_LENGTH 1000
+#define MAX_F_VALUE 100
 
 int heuristic(struct Grille *i, struct Grille *g)
 /*
@@ -110,7 +114,7 @@ bool issolvable(struct Grille *grille) {
     }
 }
 
-bool issolved(struct Grille *i, struct Grille *g){
+bool isthesame(struct Grille *i, struct Grille *g){
     for (int x = 0; x < N; x++)
     {
         for (int y = 0; y < N; y++)
@@ -125,18 +129,78 @@ bool issolved(struct Grille *i, struct Grille *g){
 
 }
 
+/*
+    Iterative deepening A* (IDA*)
+*/
+
+int search(struct Pile* pile, struct Grille *goal, int g, int threshold){
+    struct Grille *grillejeu = sommet(pile);
+    struct Grille *liste_v = grilles_voisines(grillejeu);
+    int f = g + heuristic(grillejeu, goal);
+    int min = INT_MAX;
+
+    printf("g : %d\n",g);
+
+    if (f > threshold)
+        return f;
+
+    if (isthesame(grillejeu, goal))
+        return FOUND;
+
+    for (int i = 0; i < 4; i++)
+    {
+        if (!(dans_la_pile(pile, &liste_v[i])) && !(liste_v[i].move_used == -1))
+        {
+            empiler(pile, &liste_v[i]);
+            int tmp = search(pile,goal,g+1,threshold);
+            if (tmp == FOUND)
+                return FOUND;
+            if (tmp < min)
+                min = tmp;
+            depiler(pile);
+        }
+    }
+    return min;
+}
+
+struct Pile* solve(struct Grille *init, struct Grille *goal){
+    int h,temp,threshold = heuristic(init,goal);
+    int min = INT_MAX;
+    
+    struct Pile* pile = creer_pile();
+    empiler(pile,init);
+    
+    struct Pile* pile_vide = creer_pile();
+    while (1)
+    {
+        temp = search(pile,goal,0,threshold);
+        if (temp == FOUND)
+        {
+            printf("TROUVÉ!");
+            return pile;
+        }
+        else if (temp == min)
+            return pile_vide;
+        threshold = temp;
+    }
+}
+
 int main()
 {
     struct Grille grille_de_test;
-    char finit[] = "init.txt";
     struct Grille grille_goal;
+    char finit[] = "init.txt";
     char fgoal[] = "goal.txt";
     grille_load(&grille_de_test, finit);
     grille_load(&grille_goal, fgoal);
-    // heuristic(&grille_de_test, &grille_goal,3);
-    // tuile_info(&grille_de_test,2,2);
-    int h = issolved(&grille_de_test, &grille_goal);
-    printf("Solved ? : %d",h);
-    // afficher_grille(&grille_goal);
-    // afficher_grille(&grille_de_test);
+    // struct Pile* pil = creer_pile();
+    struct Pile* pile = creer_pile();
+    empiler(pile,&grille_de_test);
+    empiler(pile,&grille_goal);
+    struct Grille *sommt = sommet(pile);
+    afficher_grille(sommt);
+    depiler(pile);
+    struct Grille *sommt2 = sommet(pile);
+    afficher_grille(sommt2);
+
 }
