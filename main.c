@@ -340,13 +340,13 @@ int grille_load(struct Grille *grille,char* fichier)
     return l;
 }
 
-struct Grille **grilles_voisines(struct Grille *grille){
+struct Grille *grilles_voisines(struct Grille *grille){
 /*
     Fonction qui retourne une liste de * de grilles dites voisines, en fonctions des coups possibles de la grille.
     On suppose donc que la liste des coups possibles est à jour avec la grille passée en paramètres.
 */
     int nb_v;
-    struct Grille temp, **liste_v = malloc(nb_v*sizeof(struct Grille)); //liste de nb_v pointeurs de grille
+    struct Grille temp, *liste_v = malloc(nb_v*sizeof(struct Grille)); //liste de nb_v pointeurs de grille
 
     for (int i = 0; i < 4; i++)
     /*
@@ -356,11 +356,12 @@ struct Grille **grilles_voisines(struct Grille *grille){
     {
         if(mouv_possibles[i])
         {
-            if(!(i == grille->move_used))
-                nb_v++;
-            else
-            // Autrement on corrige la liste des coups possibles.
+            if ((grille->move_used == RIGHT && i == LEFT) || (grille->move_used == DOWN && i == UP))
                 mouv_possibles[i] = false;
+            if ((grille->move_used == LEFT && i == RIGHT) || (grille->move_used == UP && i == DOWN))
+                mouv_possibles[i] = false;
+            else
+                nb_v++; // Autrement on corrige la liste des coups possibles.
         }
     }
 
@@ -373,11 +374,18 @@ struct Grille **grilles_voisines(struct Grille *grille){
     {
         if (mouv_possibles[i])
         {
-            temp = dupliquer_grille(grille);
-            deplacer(&temp,i);
-            temp.move_used = i;
-            // afficher_grille(&temp); Debug
-            liste_v[i] = &temp;
+            liste_v[i] = dupliquer_grille(grille);
+            deplacer(&liste_v[i],i);
+            liste_v[i].move_used = i;
+            // printf("\tCoup : %d",liste_v[i].move_used = i); //Debug
+            // afficher_grille(&liste_v[i]); //Debug
+        }
+        else
+        {
+            init_grille(&liste_v[i]);
+            // printf("\tCoup Impossible"); //Debug
+            // afficher_grille(&liste_v[i]); //Debug
+
         }
         
     }
