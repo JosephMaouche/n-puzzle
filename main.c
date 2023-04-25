@@ -217,7 +217,7 @@ void mouv_possibles_maj(struct Grille *grille)
         mouv_possibles[3] = false;
     
     //debug
-    printf("UP :%s DOWN:%s LEFT:%s RIGHT:%s\n",mouv_possibles[0]?"true":"false",mouv_possibles[1]?"true":"false",mouv_possibles[2]?"true":"false",mouv_possibles[3]?"true":"false");
+    // printf("UP :%s DOWN:%s LEFT:%s RIGHT:%s\n",mouv_possibles[0]?"true":"false",mouv_possibles[1]?"true":"false",mouv_possibles[2]?"true":"false",mouv_possibles[3]?"true":"false");
 }
 
 void tuile_swap(struct Grille *grille, int xt, int yt)
