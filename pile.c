@@ -16,6 +16,14 @@ struct Pile* creer_pile() {
     return pile;
 }
 
+struct Grille* sommet(struct Pile* pile) {
+    if (pile->top == NULL)
+        return NULL;
+    else
+        return pile->top->grille;
+}
+
+
 // Fonction qui ajoute une grille au sommet de la pile
 void empiler(struct Pile* pile, struct Grille* grille) {
     struct Node* new_node = malloc(sizeof(struct Node));
@@ -25,15 +33,16 @@ void empiler(struct Pile* pile, struct Grille* grille) {
 }
 
 // Fonction qui supprime l'élément au sommet de la pile et renvoie la grille correspondante
-struct Grille* depiler(struct Pile* pile) {
+void depiler(struct Pile* pile) {
     if (pile->top == NULL) {
-        return NULL;
     }
-    struct Node* top_node = pile->top;
-    struct Grille* grille = top_node->grille;
-    pile->top = top_node->next;
-    free(top_node);
-    return grille;
+    else
+    {
+        struct Node* top_node = pile->top;
+        struct Grille* grille = top_node->grille;
+        pile->top = top_node->next;
+        free(top_node);
+    }
 }
 
 // Fonction qui vérifie si une grille est dans la pile
