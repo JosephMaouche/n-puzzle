@@ -3,6 +3,7 @@
 /*
                             << UTILITIES.C >>
     Fichier annexe avec des fonctions de traitement de vecteur, non relaté aux structures du jeu :
+    
     - swap(int* a, int* b)
     - partition(int arr[], int low, int high)
     - quicksort(int arr[], int low, int high)
