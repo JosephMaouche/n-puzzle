@@ -1,5 +1,20 @@
 #include "main.c"
 
+/*
+                            << PILE.C >>
+    Fichiers annexe avec la structure d'un noeud, d'une pile et leurs fonctions :
+
+    - creer_pile()
+    - sommet(struct Pile* pile) 
+    - empiler(struct Pile* pile, struct Grille* grille)
+    - depiler(struct Pile* pile)
+    - dans_la_pile(struct Pile* pile, struct Grille* grille)
+    - is_empty(struct Pile* pile)
+
+    _ Node
+    _ Pile
+*/
+
 struct Node {
     struct Grille* grille;
     struct Node* next;
