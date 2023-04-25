@@ -184,23 +184,3 @@ struct Pile* solve(struct Grille *init, struct Grille *goal){
         threshold = temp;
     }
 }
-
-int main()
-{
-    struct Grille grille_de_test;
-    struct Grille grille_goal;
-    char finit[] = "init.txt";
-    char fgoal[] = "goal.txt";
-    grille_load(&grille_de_test, finit);
-    grille_load(&grille_goal, fgoal);
-    // struct Pile* pil = creer_pile();
-    struct Pile* pile = creer_pile();
-    empiler(pile,&grille_de_test);
-    empiler(pile,&grille_goal);
-    struct Grille *sommt = sommet(pile);
-    afficher_grille(sommt);
-    depiler(pile);
-    struct Grille *sommt2 = sommet(pile);
-    afficher_grille(sommt2);
-
-}
